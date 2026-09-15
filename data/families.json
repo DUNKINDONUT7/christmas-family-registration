@@ -1,0 +1,11 @@
+[
+  {
+    "id": "fam_sample001",
+    "family_name": "Sample Garcia Family",
+    "email": "garcia@example.com",
+    "password": "$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcg7b3XeKeUxWdeS86E36P4/LFm",
+    "members": ["Juan Garcia", "Maria Garcia", "Pedro Garcia", "Rosa Garcia"],
+    "status": "approved",
+    "registered_at": "2024-11-20 10:00:00"
+  }
+]
