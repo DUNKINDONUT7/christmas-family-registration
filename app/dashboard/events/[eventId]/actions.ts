@@ -13,6 +13,7 @@ import {
   users,
 } from "@/lib/db/schema"
 import { authorizeEventAction } from "@/lib/auth/event-access"
+import { isUniqueConstraintViolation } from "@/lib/db/errors"
 import { generateRawToken, hashToken } from "@/lib/utils/token"
 import { sendRegistrationStatusChangedEmail, sendCollaboratorInviteEmail } from "@/lib/email"
 import {
@@ -185,12 +186,15 @@ export async function updateRegistrationAction(input: z.infer<typeof updateRegis
         phone: parsed.data.phone || null,
       })
       .where(eq(registrations.id, registration.id))
-  } catch {
-    return {
-      success: false,
-      message: "That email is already used by another registration for this event.",
-      fieldErrors: { email: "Already registered for this event." },
+  } catch (error) {
+    if (isUniqueConstraintViolation(error, "registrations_event_email_idx")) {
+      return {
+        success: false,
+        message: "That email is already used by another registration for this event.",
+        fieldErrors: { email: "Already registered for this event." },
+      }
     }
+    throw error
   }
 
   await db.delete(registrationMembers).where(eq(registrationMembers.registrationId, registration.id))

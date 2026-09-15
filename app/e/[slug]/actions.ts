@@ -4,6 +4,7 @@ import { redirect } from "next/navigation"
 import { and, eq } from "drizzle-orm"
 import { db } from "@/lib/db"
 import { events, registrations, registrationMembers } from "@/lib/db/schema"
+import { isUniqueConstraintViolation } from "@/lib/db/errors"
 import { generateTicketCode } from "@/lib/utils/ticket"
 import { sendRegistrationReceivedEmail } from "@/lib/email"
 import {
@@ -61,9 +62,8 @@ export async function registerForEventAction(input: RegisterForEventInput): Prom
       break
     } catch (error) {
       lastError = error
-      const message = error instanceof Error ? error.message : String(error)
       // Email already used for this event — not a ticket collision, stop retrying.
-      if (message.includes("registrations_event_email_idx")) {
+      if (isUniqueConstraintViolation(error, "registrations_event_email_idx")) {
         return {
           success: false,
           message: "This email is already registered for this event.",
@@ -71,7 +71,7 @@ export async function registerForEventAction(input: RegisterForEventInput): Prom
         }
       }
       // Ticket code collision (extremely unlikely) — try again with a new code.
-      if (message.includes("registrations_event_ticket_idx")) {
+      if (isUniqueConstraintViolation(error, "registrations_event_ticket_idx")) {
         continue
       }
       throw error
