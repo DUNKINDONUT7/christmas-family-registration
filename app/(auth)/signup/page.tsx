@@ -1,7 +1,8 @@
 "use client"
 
-import { useTransition } from "react"
+import { Suspense, useTransition } from "react"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
@@ -12,7 +13,17 @@ import { signupSchema, type SignupInput } from "@/lib/validations/auth"
 import { signupAction } from "../actions"
 
 export default function SignupPage() {
+  return (
+    <Suspense>
+      <SignupForm />
+    </Suspense>
+  )
+}
+
+function SignupForm() {
   const [isPending, startTransition] = useTransition()
+  const searchParams = useSearchParams()
+  const nextPath = searchParams.get("next")
   const form = useForm<SignupInput>({
     resolver: zodResolver(signupSchema),
     defaultValues: { name: "", email: "", password: "", confirmPassword: "" },
@@ -22,7 +33,7 @@ export default function SignupPage() {
     startTransition(async () => {
       // On success signupAction() redirects server-side and this code
       // never resumes; we only ever reach here on a validation/auth failure.
-      const result = await signupAction(values)
+      const result = await signupAction(values, nextPath ?? undefined)
       if (!result.success) {
         toast.error(result.message)
         if (result.fieldErrors) {
@@ -37,7 +48,9 @@ export default function SignupPage() {
   return (
     <div>
       <h1 className="font-display text-2xl font-medium tracking-tight">Create your host account</h1>
-      <p className="mt-1 text-sm text-muted-foreground">Free to sign up — you'll be creating your first event next.</p>
+      <p className="mt-1 text-sm text-muted-foreground">
+        {nextPath ? "Create an account to continue." : "Free to sign up — you'll be creating your first event next."}
+      </p>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 space-y-4">
@@ -101,7 +114,7 @@ export default function SignupPage() {
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-primary hover:underline">
+        <Link href={nextPath ? `/login?next=${encodeURIComponent(nextPath)}` : "/login"} className="font-medium text-primary hover:underline">
           Log in
         </Link>
       </p>

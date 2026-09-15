@@ -7,6 +7,7 @@ import { users, passwordResetTokens } from "@/lib/db/schema"
 import { hashPassword, verifyPassword } from "@/lib/auth/password"
 import { startSession, endSession } from "@/lib/auth/dal"
 import { generateRawToken, hashToken } from "@/lib/utils/token"
+import { safeRedirectPath } from "@/lib/utils/safe-redirect"
 import { sendPasswordResetEmail } from "@/lib/email"
 import {
   signupSchema,
@@ -22,7 +23,8 @@ import { zodErrorToFieldErrors, type ActionResult } from "@/lib/action-result"
 
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000 // 1 hour
 
-export async function signupAction(input: SignupInput): Promise<ActionResult> {
+/** redirectTo must be a same-site relative path — never pass a user-controlled absolute URL here. */
+export async function signupAction(input: SignupInput, redirectTo?: string): Promise<ActionResult> {
   const parsed = signupSchema.safeParse(input)
   if (!parsed.success) {
     return { success: false, message: "Please fix the errors below.", fieldErrors: zodErrorToFieldErrors(parsed.error) }
@@ -47,7 +49,7 @@ export async function signupAction(input: SignupInput): Promise<ActionResult> {
     .returning({ id: users.id })
 
   await startSession(user.id)
-  redirect("/dashboard")
+  redirect(safeRedirectPath(redirectTo, "/dashboard"))
 }
 
 /** redirectTo must be a same-site relative path — never pass a user-controlled absolute URL here. */
@@ -74,11 +76,7 @@ export async function loginAction(input: LoginInput, redirectTo?: string): Promi
   if (!passwordMatches) return genericError
 
   await startSession(user.id)
-
-  // Only ever redirect to a path on this site (must start with a single
-  // "/", never "//" — that's a protocol-relative URL to an external host).
-  const safeDestination = redirectTo && /^\/(?!\/)/.test(redirectTo) ? redirectTo : "/dashboard"
-  redirect(safeDestination)
+  redirect(safeRedirectPath(redirectTo, "/dashboard"))
 }
 
 export async function logoutAction(): Promise<void> {

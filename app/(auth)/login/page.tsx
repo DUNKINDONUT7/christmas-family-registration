@@ -89,7 +89,10 @@ function LoginForm() {
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
         New here?{" "}
-        <Link href="/signup" className="font-medium text-primary hover:underline">
+        <Link
+          href={nextPath ? `/signup?next=${encodeURIComponent(nextPath)}` : "/signup"}
+          className="font-medium text-primary hover:underline"
+        >
           Create an account
         </Link>
       </p>

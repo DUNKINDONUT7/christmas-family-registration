@@ -1,5 +1,6 @@
 import "server-only"
-import { and, count, desc, eq, inArray } from "drizzle-orm"
+import { cache } from "react"
+import { count, desc, eq, inArray } from "drizzle-orm"
 import { db } from "@/lib/db"
 import { events, eventCollaborators, registrations, type Event } from "@/lib/db/schema"
 
@@ -52,12 +53,12 @@ export async function getHostDashboardData(userId: string) {
   return { ownedEvents: ownedWithCounts, collaboratingEvents: collaboratingWithCounts }
 }
 
-export async function getEventById(eventId: string) {
+export const getEventById = cache(async (eventId: string) => {
   const [event] = await db.select().from(events).where(eq(events.id, eventId)).limit(1)
   return event ?? null
-}
+})
 
-export async function getEventBySlug(slug: string) {
+export const getEventBySlug = cache(async (slug: string) => {
   const [event] = await db.select().from(events).where(eq(events.slug, slug)).limit(1)
   return event ?? null
-}
+})
