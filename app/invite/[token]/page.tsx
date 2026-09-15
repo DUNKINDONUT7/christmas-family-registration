@@ -1,6 +1,8 @@
+import Link from "next/link"
 import { getCurrentUser } from "@/lib/auth/dal"
 import { lookupInviteByRawToken } from "@/lib/queries/invites"
 import { InviteAcceptCard } from "@/components/invite-accept-card"
+import { Button } from "@/components/ui/button"
 
 const INVALID_REASON_COPY: Record<string, string> = {
   not_found: "This invite link doesn't exist. Double-check the link the host sent you.",
@@ -18,6 +20,9 @@ export default async function InvitePage({ params }: { params: Promise<{ token: 
         <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-8 text-center shadow-sm">
           <h1 className="font-display text-xl font-medium">Invite not available</h1>
           <p className="mt-3 text-sm text-muted-foreground">{INVALID_REASON_COPY[invite.reason]}</p>
+          <Button asChild className="mt-6 w-full">
+            <Link href={user ? "/dashboard" : "/"}>{user ? "Go to your dashboard" : "Go home"}</Link>
+          </Button>
         </div>
       </div>
     )

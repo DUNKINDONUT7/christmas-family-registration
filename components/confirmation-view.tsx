@@ -109,11 +109,14 @@ export function ConfirmationView({
             </Button>
           </div>
 
-          <p className="mt-6 text-xs text-muted-foreground print:hidden">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground print:hidden">
+            <Link href={`/e/${event.slug}`} className="hover:underline">
+              Back to event page
+            </Link>
             <Link href={`/e/${event.slug}/status`} className="hover:underline">
               Look up this ticket again later
             </Link>
-          </p>
+          </div>
         </div>
       </div>
     </div>
