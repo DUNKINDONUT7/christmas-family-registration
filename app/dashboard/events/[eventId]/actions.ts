@@ -48,7 +48,19 @@ export async function updateEventDetailsAction(eventId: string, input: EventDeta
     return { success: false, message: "Please fix the errors below.", fieldErrors: zodErrorToFieldErrors(parsed.error) }
   }
 
-  const { title, description, eventDate, eventTime, venue, dressCode, themeColor, capacity, coverImageUrl } = parsed.data
+  const {
+    title,
+    description,
+    eventDate,
+    eventTime,
+    venue,
+    dressCode,
+    cateringStyle,
+    menuDetails,
+    themeColor,
+    capacity,
+    coverImageUrl,
+  } = parsed.data
 
   await db
     .update(events)
@@ -59,6 +71,8 @@ export async function updateEventDetailsAction(eventId: string, input: EventDeta
       eventTime: eventTime || null,
       venue: venue || null,
       dressCode: dressCode || null,
+      cateringStyle: cateringStyle || null,
+      menuDetails: menuDetails || null,
       themeColor,
       capacity: capacity ?? null,
       coverImageUrl: coverImageUrl || null,

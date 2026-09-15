@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { THEME_COLORS, EVENT_STATUSES } from "@/lib/constants"
+import { THEME_COLORS, EVENT_STATUSES, CATERING_STYLES } from "@/lib/constants"
 
 export const scheduleItemSchema = z.object({
   time: z.string().trim().min(1, "Enter a time.").max(50),
@@ -18,6 +18,8 @@ export const eventDetailsSchema = z.object({
   eventTime: z.string().trim().max(20).optional().or(z.literal("")),
   venue: z.string().trim().max(200).optional().or(z.literal("")),
   dressCode: z.string().trim().max(200).optional().or(z.literal("")),
+  cateringStyle: z.enum(CATERING_STYLES).optional().or(z.literal("")),
+  menuDetails: z.string().trim().max(1000).optional().or(z.literal("")),
   themeColor: z.enum(THEME_COLORS),
   capacity: z.coerce.number().int().positive().max(100000).optional().nullable(),
   coverImageUrl: z

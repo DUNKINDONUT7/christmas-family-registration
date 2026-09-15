@@ -53,3 +53,20 @@ export const EVENT_STATUS_META: Record<EventStatusValue, { label: string; descri
 
 export const REGISTRATION_STATUSES = ["pending", "approved", "rejected"] as const
 export type RegistrationStatusValue = (typeof REGISTRATION_STATUSES)[number]
+
+export const CATERING_STYLES = [
+  "buffet",
+  "plated",
+  "potluck",
+  "snacks_only",
+  "none",
+] as const
+export type CateringStyle = (typeof CATERING_STYLES)[number]
+
+export const CATERING_STYLE_META: Record<CateringStyle, { label: string; description: string }> = {
+  buffet: { label: "Buffet", description: "Guests serve themselves from a food spread." },
+  plated: { label: "Plated / set menu", description: "A fixed menu served to each guest." },
+  potluck: { label: "Potluck", description: "Guests bring a dish to share." },
+  snacks_only: { label: "Snacks & drinks only", description: "Light refreshments, not a full meal." },
+  none: { label: "No food provided", description: "Guests should eat beforehand." },
+}

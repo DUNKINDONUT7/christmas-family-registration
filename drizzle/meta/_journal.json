@@ -8,6 +8,13 @@
       "when": 1789491702764,
       "tag": "0000_unique_praxagora",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789493039075,
+      "tag": "0001_illegal_santa_claus",
+      "breakpoints": true
     }
   ]
 }

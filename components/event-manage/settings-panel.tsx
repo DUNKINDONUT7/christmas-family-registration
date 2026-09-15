@@ -33,7 +33,7 @@ import {
 import { ThemeColorPicker } from "@/components/theme-color-picker"
 import { CollaboratorsSection } from "./collaborators-section"
 import { eventDetailsSchema, type EventDetailsInput } from "@/lib/validations/event"
-import { EVENT_STATUSES, EVENT_STATUS_META } from "@/lib/constants"
+import { EVENT_STATUSES, EVENT_STATUS_META, CATERING_STYLES, CATERING_STYLE_META } from "@/lib/constants"
 import { updateEventDetailsAction, updateEventStatusAction, deleteEventAction } from "@/app/dashboard/events/[eventId]/actions"
 import type { Event } from "@/lib/db/schema"
 
@@ -70,6 +70,8 @@ export function SettingsPanel({ event, collaborators }: { event: Event; collabor
       eventTime: event.eventTime ?? "",
       venue: event.venue ?? "",
       dressCode: event.dressCode ?? "",
+      cateringStyle: event.cateringStyle ?? "",
+      menuDetails: event.menuDetails ?? "",
       themeColor: event.themeColor,
       capacity: event.capacity ?? undefined,
       coverImageUrl: event.coverImageUrl ?? "",
@@ -203,6 +205,44 @@ export function SettingsPanel({ event, collaborators }: { event: Event; collabor
                   <FormLabel>Dress code (optional)</FormLabel>
                   <FormControl>
                     <Input placeholder="Festive attire" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="cateringStyle"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Food & catering (optional)</FormLabel>
+                  <Select value={field.value || undefined} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Not specified" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {CATERING_STYLES.map((style) => (
+                        <SelectItem key={style} value={style}>
+                          {CATERING_STYLE_META[style].label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>Lets guests know what to expect before they RSVP.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="menuDetails"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>What's on the menu (optional)</FormLabel>
+                  <FormControl>
+                    <Textarea rows={2} placeholder="Lechon, pancit canton, leche flan, unlimited iced tea" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -16,6 +16,13 @@ export const registrationStatusEnum = pgEnum("registration_status", [
   "approved",
   "rejected",
 ])
+export const cateringStyleEnum = pgEnum("catering_style", [
+  "buffet",
+  "plated",
+  "potluck",
+  "snacks_only",
+  "none",
+])
 export const themeColorEnum = pgEnum("theme_color", [
   "christmas-red",
   "pine-green",
@@ -48,6 +55,8 @@ export const events = pgTable("events", {
   eventTime: text("event_time"),
   venue: text("venue"),
   dressCode: text("dress_code"),
+  cateringStyle: cateringStyleEnum("catering_style"),
+  menuDetails: text("menu_details"),
   themeColor: themeColorEnum("theme_color").notNull().default("christmas-red"),
   ticketPrefix: text("ticket_prefix").notNull(),
   status: eventStatusEnum("status").notNull().default("draft"),

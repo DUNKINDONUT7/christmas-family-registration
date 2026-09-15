@@ -5,12 +5,12 @@ import Link from "next/link"
 import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { CalendarDays, MapPin, Plus, Shirt, X } from "lucide-react"
+import { CalendarDays, MapPin, Plus, Shirt, UtensilsCrossed, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { TicketStub } from "@/components/ticket-stub"
-import { THEME_COLOR_META } from "@/lib/constants"
+import { THEME_COLOR_META, CATERING_STYLE_META } from "@/lib/constants"
 import { formatEventDate, formatEventTime } from "@/lib/utils/format"
 import { registerForEventSchema, type RegisterForEventInput } from "@/lib/validations/registration"
 import { registerForEventAction } from "@/app/e/[slug]/actions"
@@ -95,12 +95,28 @@ function OpenRegistrationForm({ event, scheduleItems }: { event: Event; schedule
                 {event.dressCode}
               </span>
             )}
+            {event.cateringStyle && (
+              <span className="flex items-center gap-1.5">
+                <UtensilsCrossed className="size-4" />
+                {CATERING_STYLE_META[event.cateringStyle].label}
+              </span>
+            )}
           </div>
         </div>
       </div>
 
       <div className="mx-auto grid max-w-4xl gap-10 px-6 py-12 lg:grid-cols-[1fr_320px]">
         <div>
+          {event.menuDetails && (
+            <div className="mb-10 rounded-xl border border-border bg-card p-5">
+              <h2 className="mb-2 flex items-center gap-2 font-display text-lg font-medium">
+                <UtensilsCrossed className="size-4" />
+                What's on the menu
+              </h2>
+              <p className="text-sm text-muted-foreground">{event.menuDetails}</p>
+            </div>
+          )}
+
           {scheduleItems.length > 0 && (
             <div className="mb-10 rounded-xl border border-border bg-card p-5">
               <h2 className="mb-3 font-display text-lg font-medium">What to expect</h2>
