@@ -1,4 +1,4 @@
-export const THEME_COLORS = [
+export const PRESET_THEME_COLORS = [
   "christmas-red",
   "pine-green",
   "metallic-gold",
@@ -7,9 +7,18 @@ export const THEME_COLORS = [
   "rose-gold",
 ] as const
 
+export type PresetThemeColor = (typeof PRESET_THEME_COLORS)[number]
+
+/** All valid values for an event's themeColor column — presets plus "custom" (paired with customColorHex). */
+export const THEME_COLORS = [...PRESET_THEME_COLORS, "custom"] as const
+
 export type ThemeColor = (typeof THEME_COLORS)[number]
 
-export const THEME_COLOR_META: Record<ThemeColor, { label: string; emoji: string; gradient: string }> = {
+export const DEFAULT_CUSTOM_COLOR_HEX = "#c41e3a"
+
+export const HEX_COLOR_REGEX = /^#[0-9a-fA-F]{6}$/
+
+export const THEME_COLOR_META: Record<PresetThemeColor, { label: string; emoji: string; gradient: string }> = {
   "christmas-red": {
     label: "Christmas Red",
     emoji: "🎀",
@@ -40,6 +49,33 @@ export const THEME_COLOR_META: Record<ThemeColor, { label: string; emoji: string
     emoji: "🌹",
     gradient: "linear-gradient(135deg, #b76e79 0%, #e8a3ad 100%)",
   },
+}
+
+/** Lightens a #rrggbb hex color toward white by `amount` (0-1), for a two-stop gradient. */
+function lightenHex(hex: string, amount: number): string {
+  const num = parseInt(hex.slice(1), 16)
+  const r = (num >> 16) & 0xff
+  const g = (num >> 8) & 0xff
+  const b = num & 0xff
+  const mix = (channel: number) => Math.round(channel + (255 - channel) * amount)
+  return `#${[mix(r), mix(g), mix(b)].map((c) => c.toString(16).padStart(2, "0")).join("")}`
+}
+
+/** Resolves the actual CSS gradient for an event's theme — handles both presets and a custom hex color. */
+export function getThemeGradient(themeColor: ThemeColor, customColorHex?: string | null): string {
+  if (themeColor === "custom") {
+    const hex = customColorHex && HEX_COLOR_REGEX.test(customColorHex) ? customColorHex : DEFAULT_CUSTOM_COLOR_HEX
+    return `linear-gradient(135deg, ${hex} 0%, ${lightenHex(hex, 0.35)} 100%)`
+  }
+  return THEME_COLOR_META[themeColor].gradient
+}
+
+/** Resolves a human-readable label — "Custom color" (with the hex shown) for custom themes. */
+export function getThemeLabel(themeColor: ThemeColor, customColorHex?: string | null): string {
+  if (themeColor === "custom") {
+    return customColorHex && HEX_COLOR_REGEX.test(customColorHex) ? `Custom (${customColorHex})` : "Custom color"
+  }
+  return THEME_COLOR_META[themeColor].label
 }
 
 export const EVENT_STATUSES = ["draft", "open", "closed"] as const

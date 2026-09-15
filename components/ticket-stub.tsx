@@ -2,7 +2,7 @@
 
 import { QRCodeSVG } from "qrcode.react"
 import { Badge } from "@/components/ui/badge"
-import { THEME_COLOR_META, type ThemeColor } from "@/lib/constants"
+import { getThemeGradient, type ThemeColor } from "@/lib/constants"
 import { formatEventDate, formatEventTime } from "@/lib/utils/format"
 import { cn } from "@/lib/utils"
 
@@ -11,6 +11,7 @@ interface TicketStubProps {
   eventDate: string
   eventTime?: string | null
   themeColor: ThemeColor
+  customColorHex?: string | null
   registrantName: string
   memberCount: number
   ticketCode?: string
@@ -30,6 +31,7 @@ export function TicketStub({
   eventDate,
   eventTime,
   themeColor,
+  customColorHex,
   registrantName,
   memberCount,
   ticketCode,
@@ -37,7 +39,7 @@ export function TicketStub({
   qrValue,
   className,
 }: TicketStubProps) {
-  const theme = THEME_COLOR_META[themeColor]
+  const gradient = getThemeGradient(themeColor, customColorHex)
   const time = formatEventTime(eventTime)
 
   return (
@@ -45,7 +47,7 @@ export function TicketStub({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.25em] text-[#12211a]/50">
-            <span className="inline-block size-2 rounded-full" style={{ background: theme.gradient }} />
+            <span className="inline-block size-2 rounded-full" style={{ background: gradient }} />
             Event
           </p>
           <p className="truncate font-display text-lg font-medium">{eventTitle || "Your event"}</p>

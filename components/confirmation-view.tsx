@@ -4,7 +4,7 @@ import Link from "next/link"
 import { CalendarPlus, Printer } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { TicketStub } from "@/components/ticket-stub"
-import { THEME_COLOR_META } from "@/lib/constants"
+import { getThemeGradient } from "@/lib/constants"
 import { buildGoogleCalendarUrl } from "@/lib/utils/calendar"
 import type { Event, ScheduleItem } from "@/lib/db/schema"
 import type { RegistrationWithMembers } from "@/lib/queries/registrations"
@@ -33,7 +33,7 @@ export function ConfirmationView({
   registration: RegistrationWithMembers
   scheduleItems: ScheduleItem[]
 }) {
-  const theme = THEME_COLOR_META[event.themeColor]
+  const gradient = getThemeGradient(event.themeColor, event.customColorHex)
   const copy = STATUS_COPY[registration.status]
   const confirmationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/e/${event.slug}/confirmation/${registration.id}`
   const googleCalendarUrl = buildGoogleCalendarUrl({
@@ -45,7 +45,7 @@ export function ConfirmationView({
   })
 
   return (
-    <div className="min-h-screen" style={{ background: theme.gradient }}>
+    <div className="min-h-screen" style={{ background: gradient }}>
       <div className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-6 py-16">
         <div className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-2xl print:shadow-none">
           <h1 className="font-display text-2xl font-medium">{copy.title}</h1>
@@ -57,6 +57,7 @@ export function ConfirmationView({
               eventDate={event.eventDate}
               eventTime={event.eventTime}
               themeColor={event.themeColor}
+              customColorHex={event.customColorHex}
               registrantName={registration.registrantName}
               memberCount={registration.members.length}
               ticketCode={registration.ticketCode}

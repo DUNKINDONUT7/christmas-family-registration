@@ -30,6 +30,7 @@ export const themeColorEnum = pgEnum("theme_color", [
   "snow-white",
   "midnight-blue",
   "rose-gold",
+  "custom",
 ])
 
 // Everyone who signs up is a host: they own events and can be invited
@@ -58,6 +59,7 @@ export const events = pgTable("events", {
   cateringStyle: cateringStyleEnum("catering_style"),
   menuDetails: text("menu_details"),
   themeColor: themeColorEnum("theme_color").notNull().default("christmas-red"),
+  customColorHex: text("custom_color_hex"),
   ticketPrefix: text("ticket_prefix").notNull(),
   status: eventStatusEnum("status").notNull().default("draft"),
   capacity: integer("capacity"),

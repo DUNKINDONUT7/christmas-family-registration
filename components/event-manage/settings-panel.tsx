@@ -31,9 +31,10 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { ThemeColorPicker } from "@/components/theme-color-picker"
+import { EventPreviewCard } from "@/components/event-preview-card"
 import { CollaboratorsSection } from "./collaborators-section"
 import { eventDetailsSchema, type EventDetailsInput } from "@/lib/validations/event"
-import { EVENT_STATUSES, EVENT_STATUS_META, CATERING_STYLES, CATERING_STYLE_META } from "@/lib/constants"
+import { EVENT_STATUSES, EVENT_STATUS_META, CATERING_STYLES, CATERING_STYLE_META, DEFAULT_CUSTOM_COLOR_HEX } from "@/lib/constants"
 import { updateEventDetailsAction, updateEventStatusAction, deleteEventAction } from "@/app/dashboard/events/[eventId]/actions"
 import type { Event } from "@/lib/db/schema"
 
@@ -73,6 +74,7 @@ export function SettingsPanel({ event, collaborators }: { event: Event; collabor
       cateringStyle: event.cateringStyle ?? "",
       menuDetails: event.menuDetails ?? "",
       themeColor: event.themeColor,
+      customColorHex: event.customColorHex ?? DEFAULT_CUSTOM_COLOR_HEX,
       capacity: event.capacity ?? undefined,
       coverImageUrl: event.coverImageUrl ?? "",
     },
@@ -94,6 +96,16 @@ export function SettingsPanel({ event, collaborators }: { event: Event; collabor
     })
   }
 
+  const watchedTitle = form.watch("title")
+  const watchedDescription = form.watch("description")
+  const watchedEventDate = form.watch("eventDate")
+  const watchedEventTime = form.watch("eventTime")
+  const watchedVenue = form.watch("venue")
+  const watchedDressCode = form.watch("dressCode")
+  const watchedCateringStyle = form.watch("cateringStyle")
+  const watchedThemeColor = form.watch("themeColor")
+  const watchedCustomColorHex = form.watch("customColorHex")
+
   function handleStatusChange(status: string) {
     startSavingStatus(async () => {
       const result = await updateEventStatusAction({ eventId: event.id, status: status as (typeof EVENT_STATUSES)[number] })
@@ -106,8 +118,8 @@ export function SettingsPanel({ event, collaborators }: { event: Event; collabor
   }
 
   return (
-    <div className="max-w-2xl space-y-10">
-      <section>
+    <div className="max-w-4xl space-y-10">
+      <section className="max-w-2xl">
         <h3 className="font-display text-base font-medium">Registration status</h3>
         <p className="mt-1 mb-3 text-sm text-muted-foreground">{EVENT_STATUS_META[event.status].description}</p>
         <Select value={event.status} onValueChange={handleStatusChange} disabled={isSavingStatus}>
@@ -128,6 +140,7 @@ export function SettingsPanel({ event, collaborators }: { event: Event; collabor
 
       <section>
         <h3 className="mb-4 font-display text-base font-medium">Event details</h3>
+        <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmitDetails)} className="space-y-4">
             <FormField
@@ -289,7 +302,12 @@ export function SettingsPanel({ event, collaborators }: { event: Event; collabor
                 <FormItem>
                   <FormLabel>Color theme</FormLabel>
                   <FormControl>
-                    <ThemeColorPicker value={field.value} onChange={field.onChange} />
+                    <ThemeColorPicker
+                      value={field.value}
+                      customColorHex={form.watch("customColorHex") || ""}
+                      onChange={field.onChange}
+                      onCustomColorChange={(hex) => form.setValue("customColorHex", hex, { shouldValidate: true })}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -300,17 +318,37 @@ export function SettingsPanel({ event, collaborators }: { event: Event; collabor
             </Button>
           </form>
         </Form>
+
+        <div className="hidden lg:block">
+          <div className="sticky top-10">
+            <p className="mb-3 text-center text-xs font-medium uppercase tracking-widest text-muted-foreground">
+              Live preview
+            </p>
+            <EventPreviewCard
+              title={watchedTitle}
+              description={watchedDescription}
+              eventDate={watchedEventDate}
+              eventTime={watchedEventTime}
+              venue={watchedVenue}
+              dressCode={watchedDressCode}
+              cateringStyle={watchedCateringStyle}
+              themeColor={watchedThemeColor}
+              customColorHex={watchedCustomColorHex}
+            />
+          </div>
+        </div>
+        </div>
       </section>
 
       <Separator />
 
-      <section>
+      <section className="max-w-2xl">
         <CollaboratorsSection eventId={event.id} collaborators={collaborators} />
       </section>
 
       <Separator />
 
-      <section>
+      <section className="max-w-2xl">
         <h3 className="font-display text-base font-medium text-destructive">Danger zone</h3>
         <p className="mt-1 mb-3 text-sm text-muted-foreground">
           Deleting this event permanently removes it, its schedule, and every registration. This can't be undone.

@@ -1,8 +1,7 @@
 import Link from "next/link"
 import { Users, Clock } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { THEME_COLOR_META } from "@/lib/constants"
-import { EVENT_STATUS_META } from "@/lib/constants"
+import { getThemeGradient, EVENT_STATUS_META } from "@/lib/constants"
 import { formatEventDate } from "@/lib/utils/format"
 import type { EventWithCounts } from "@/lib/queries/events"
 
@@ -13,7 +12,7 @@ const STATUS_BADGE_VARIANT: Record<string, string> = {
 }
 
 export function EventCard({ event, role }: { event: EventWithCounts; role: "owner" | "collaborator" }) {
-  const theme = THEME_COLOR_META[event.themeColor]
+  const gradient = getThemeGradient(event.themeColor, event.customColorHex)
 
   return (
     <Link
@@ -22,7 +21,7 @@ export function EventCard({ event, role }: { event: EventWithCounts; role: "owne
     >
       <div
         className="relative flex min-h-[110px] flex-col justify-between p-5 text-white"
-        style={{ background: theme.gradient }}
+        style={{ background: gradient }}
       >
         <div className="flex items-start justify-between gap-2">
           <Badge className={`${STATUS_BADGE_VARIANT[event.status]} border-0`}>{EVENT_STATUS_META[event.status].label}</Badge>

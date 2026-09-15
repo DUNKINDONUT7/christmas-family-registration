@@ -28,6 +28,7 @@ export async function createEventAction(input: EventDetailsInput): Promise<Actio
     cateringStyle,
     menuDetails,
     themeColor,
+    customColorHex,
     capacity,
     coverImageUrl,
   } = parsed.data
@@ -46,6 +47,7 @@ export async function createEventAction(input: EventDetailsInput): Promise<Actio
       cateringStyle: cateringStyle || null,
       menuDetails: menuDetails || null,
       themeColor,
+      customColorHex: themeColor === "custom" ? customColorHex || null : null,
       ticketPrefix: deriveTicketPrefix(title),
       capacity: capacity ?? null,
       coverImageUrl: coverImageUrl || null,

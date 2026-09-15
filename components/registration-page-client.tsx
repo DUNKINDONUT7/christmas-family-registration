@@ -10,18 +10,18 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { TicketStub } from "@/components/ticket-stub"
-import { THEME_COLOR_META, CATERING_STYLE_META } from "@/lib/constants"
+import { getThemeGradient, CATERING_STYLE_META } from "@/lib/constants"
 import { formatEventDate, formatEventTime } from "@/lib/utils/format"
 import { registerForEventSchema, type RegisterForEventInput } from "@/lib/validations/registration"
 import { registerForEventAction } from "@/app/e/[slug]/actions"
 import type { Event, ScheduleItem } from "@/lib/db/schema"
 
 export function RegistrationPageClient({ event, scheduleItems }: { event: Event; scheduleItems: ScheduleItem[] }) {
-  const theme = THEME_COLOR_META[event.themeColor]
+  const gradient = getThemeGradient(event.themeColor, event.customColorHex)
 
   if (event.status !== "open") {
     return (
-      <div className="flex min-h-screen items-center justify-center px-6" style={{ background: theme.gradient }}>
+      <div className="flex min-h-screen items-center justify-center px-6" style={{ background: gradient }}>
         <div className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-xl">
           <h1 className="font-display text-2xl font-medium">{event.title}</h1>
           <p className="mt-3 text-sm text-muted-foreground">
@@ -44,7 +44,7 @@ export function RegistrationPageClient({ event, scheduleItems }: { event: Event;
 }
 
 function OpenRegistrationForm({ event, scheduleItems }: { event: Event; scheduleItems: ScheduleItem[] }) {
-  const theme = THEME_COLOR_META[event.themeColor]
+  const gradient = getThemeGradient(event.themeColor, event.customColorHex)
   const [isPending, startTransition] = useTransition()
 
   const form = useForm<RegisterForEventInput>({
@@ -71,7 +71,7 @@ function OpenRegistrationForm({ event, scheduleItems }: { event: Event; schedule
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="border-b border-border" style={{ background: theme.gradient }}>
+      <div className="border-b border-border" style={{ background: gradient }}>
         <div className="mx-auto max-w-4xl px-6 py-14 text-white">
           <p className="font-mono text-xs uppercase tracking-[0.25em] text-white/70">You're invited</p>
           <h1 className="mt-2 font-display text-3xl font-medium tracking-tight sm:text-4xl">{event.title}</h1>
@@ -239,6 +239,7 @@ function OpenRegistrationForm({ event, scheduleItems }: { event: Event; schedule
               eventDate={event.eventDate}
               eventTime={event.eventTime}
               themeColor={event.themeColor}
+              customColorHex={event.customColorHex}
               registrantName={watchedName}
               memberCount={watchedMembers?.filter(Boolean).length || 1}
               status="pending"

@@ -58,6 +58,7 @@ export async function updateEventDetailsAction(eventId: string, input: EventDeta
     cateringStyle,
     menuDetails,
     themeColor,
+    customColorHex,
     capacity,
     coverImageUrl,
   } = parsed.data
@@ -74,6 +75,7 @@ export async function updateEventDetailsAction(eventId: string, input: EventDeta
       cateringStyle: cateringStyle || null,
       menuDetails: menuDetails || null,
       themeColor,
+      customColorHex: themeColor === "custom" ? customColorHex || null : null,
       capacity: capacity ?? null,
       coverImageUrl: coverImageUrl || null,
       updatedAt: new Date(),

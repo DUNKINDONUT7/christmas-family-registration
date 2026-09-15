@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { THEME_COLORS, EVENT_STATUSES, CATERING_STYLES } from "@/lib/constants"
+import { THEME_COLORS, EVENT_STATUSES, CATERING_STYLES, HEX_COLOR_REGEX } from "@/lib/constants"
 
 export const scheduleItemSchema = z.object({
   time: z.string().trim().min(1, "Enter a time.").max(50),
@@ -8,28 +8,39 @@ export const scheduleItemSchema = z.object({
 
 export type ScheduleItemInput = z.infer<typeof scheduleItemSchema>
 
-export const eventDetailsSchema = z.object({
-  title: z.string().trim().min(3, "Title must be at least 3 characters.").max(150),
-  description: z.string().trim().max(2000).optional().or(z.literal("")),
-  eventDate: z
-    .string()
-    .trim()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a valid date."),
-  eventTime: z.string().trim().max(20).optional().or(z.literal("")),
-  venue: z.string().trim().max(200).optional().or(z.literal("")),
-  dressCode: z.string().trim().max(200).optional().or(z.literal("")),
-  cateringStyle: z.enum(CATERING_STYLES).optional().or(z.literal("")),
-  menuDetails: z.string().trim().max(1000).optional().or(z.literal("")),
-  themeColor: z.enum(THEME_COLORS),
-  capacity: z.coerce.number().int().positive().max(100000).optional().nullable(),
-  coverImageUrl: z
-    .string()
-    .trim()
-    .url("Enter a valid image URL.")
-    .max(2000)
-    .optional()
-    .or(z.literal("")),
-})
+export const eventDetailsSchema = z
+  .object({
+    title: z.string().trim().min(3, "Title must be at least 3 characters.").max(150),
+    description: z.string().trim().max(2000).optional().or(z.literal("")),
+    eventDate: z
+      .string()
+      .trim()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a valid date."),
+    eventTime: z.string().trim().max(20).optional().or(z.literal("")),
+    venue: z.string().trim().max(200).optional().or(z.literal("")),
+    dressCode: z.string().trim().max(200).optional().or(z.literal("")),
+    cateringStyle: z.enum(CATERING_STYLES).optional().or(z.literal("")),
+    menuDetails: z.string().trim().max(1000).optional().or(z.literal("")),
+    themeColor: z.enum(THEME_COLORS),
+    customColorHex: z.string().trim().optional().or(z.literal("")),
+    capacity: z.coerce.number().int().positive().max(100000).optional().nullable(),
+    coverImageUrl: z
+      .string()
+      .trim()
+      .url("Enter a valid image URL.")
+      .max(2000)
+      .optional()
+      .or(z.literal("")),
+  })
+  .superRefine((data, ctx) => {
+    if (data.themeColor === "custom" && !HEX_COLOR_REGEX.test(data.customColorHex ?? "")) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["customColorHex"],
+        message: "Enter a valid hex color, e.g. #c41e3a.",
+      })
+    }
+  })
 
 export type EventDetailsInput = z.infer<typeof eventDetailsSchema>
 
