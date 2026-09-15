@@ -6,7 +6,7 @@ import { verifySessionToken, sessionCookie } from "@/lib/auth/session"
 // defense-in-depth layer only — every protected Server Action and page
 // also calls requireUser() (lib/auth/dal.ts), which re-checks against
 // the database and is the source of truth for authorization.
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const token = request.cookies.get(sessionCookie.name)?.value
   const session = token ? await verifySessionToken(token) : null
 
