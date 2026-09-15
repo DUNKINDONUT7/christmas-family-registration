@@ -19,7 +19,7 @@ export default async function EventManagePage({
   const event = await getEventById(eventId)
   if (!event) notFound()
 
-  const role = await getEventRole(eventId, user.id)
+  const role = await getEventRole(eventId, user.id, user.platformRole === "admin")
   if (!role) notFound()
 
   const [registrations, scheduleItems, collaborators] = await Promise.all([

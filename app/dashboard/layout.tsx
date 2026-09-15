@@ -14,6 +14,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
             Admit One
           </Link>
           <div className="flex items-center gap-4">
+            {user.platformRole === "admin" && (
+              <Link href="/admin" className="text-sm font-medium text-primary hover:underline">
+                Admin
+              </Link>
+            )}
             <span className="hidden text-sm text-muted-foreground sm:inline">Hi, {user.name.split(" ")[0]}</span>
             <form action={logoutAction}>
               <Button type="submit" variant="ghost" size="sm">

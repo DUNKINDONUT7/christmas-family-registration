@@ -13,7 +13,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ eve
     return new Response("Unauthorized", { status: 401 })
   }
 
-  const role = await getEventRole(eventId, user.id)
+  const role = await getEventRole(eventId, user.id, user.platformRole === "admin")
   if (!role) {
     return new Response("Not found", { status: 404 })
   }

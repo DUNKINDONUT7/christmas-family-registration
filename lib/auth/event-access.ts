@@ -12,8 +12,12 @@ export type EventRole = "owner" | "collaborator"
  * settings changes and inviting collaborators. "collaborator" can
  * manage guests and the schedule, but not delete the event, change
  * settings, or invite further collaborators.
+ *
+ * A platform admin (isAdmin: true) is always treated as "owner" of
+ * every event — the site operator has full access without needing to
+ * be added as a collaborator on each one.
  */
-export async function getEventRole(eventId: string, userId: string): Promise<EventRole | null> {
+export async function getEventRole(eventId: string, userId: string, isAdmin = false): Promise<EventRole | null> {
   const [event] = await db
     .select({ hostId: events.hostId })
     .from(events)
@@ -21,7 +25,7 @@ export async function getEventRole(eventId: string, userId: string): Promise<Eve
     .limit(1)
 
   if (!event) return null
-  if (event.hostId === userId) return "owner"
+  if (isAdmin || event.hostId === userId) return "owner"
 
   const [collaborator] = await db
     .select({ id: eventCollaborators.id })
@@ -55,7 +59,7 @@ export async function authorizeEventAction(
   requiredRole: "owner" | "any"
 ): Promise<{ ok: true; role: EventRole; userId: string } | { ok: false; result: { success: false; message: string } }> {
   const user = await requireUser()
-  const role = await getEventRole(eventId, user.id)
+  const role = await getEventRole(eventId, user.id, user.platformRole === "admin")
 
   if (!role) {
     return { ok: false, result: { success: false, message: "You don't have access to this event." } }

@@ -33,13 +33,20 @@ export const themeColorEnum = pgEnum("theme_color", [
   "custom",
 ])
 
+export const platformRoleEnum = pgEnum("platform_role", ["user", "admin"])
+
 // Everyone who signs up is a host: they own events and can be invited
-// as a collaborator on events owned by other hosts.
+// as a collaborator on events owned by other hosts. platformRole is
+// separate from that — "admin" is the platform operator, with implicit
+// owner-level access to every event on the site (see getEventRole).
+// There is no self-serve way to become one; it's set directly in the
+// database.
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
   email: text("email").notNull(),
   passwordHash: text("password_hash").notNull(),
+  platformRole: platformRoleEnum("platform_role").notNull().default("user"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 }, (table) => ({
