@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ExternalLink, PartyPopper, Users, CalendarClock, Settings2, X } from "lucide-react"
+import { ArrowLeft, ExternalLink, PartyPopper, Users, CalendarClock, Settings2, X } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -60,6 +60,13 @@ export function EventManageShell({
           </Button>
         </div>
       )}
+
+      <Link
+        href="/dashboard"
+        className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+      >
+        <ArrowLeft className="size-4" /> Back to your events
+      </Link>
 
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
